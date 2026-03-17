@@ -573,6 +573,61 @@ blockquote {
 @media (max-width: 520px) {
   .media-slots.two-up { grid-template-columns: 1fr; }
 }
+/* ── COUNTDOWN ── */
+.countdown-block {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid #1e1e1e;
+}
+.countdown-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+.countdown-timer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3rem;
+}
+.countdown-unit span:first-child {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: #6ba3c8;
+  line-height: 1;
+}
+.cd-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: #444;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+.countdown-sep {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #333;
+  line-height: 1;
+  padding-top: 0.05rem;
+}
+.countdown-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: #3a3a3a;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.75rem;
+}
 
 </style>
 </head>
@@ -637,6 +692,20 @@ blockquote {
 
   <div class="home-divider">
     <span>Coming soon</span>
+  </div>
+
+  <div class="countdown-block">
+    <div class="countdown-label">Next case drops in</div>
+    <div class="countdown-timer">
+      <div class="countdown-unit"><span id="cd-days">--</span><span class="cd-sub">days</span></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cd-hours">--</span><span class="cd-sub">hrs</span></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cd-mins">--</span><span class="cd-sub">min</span></div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-unit"><span id="cd-secs">--</span><span class="cd-sub">sec</span></div>
+    </div>
+    <div class="countdown-sub">Every Tuesday</div>
   </div>
 
   <ul class="case-list case-list--soon">
@@ -1022,6 +1091,38 @@ blockquote {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  // ── TUESDAY COUNTDOWN ──────────────────────────────────────────
+  function getNextTuesday() {
+    const now = new Date();
+    const target = new Date(now);
+    // Tuesday = day 2
+    const day = now.getDay();
+    const daysUntilTuesday = (2 - day + 7) % 7 || 7;
+    target.setDate(now.getDate() + daysUntilTuesday);
+    target.setHours(0, 0, 0, 0);
+    return target;
+  }
+
+  function updateCountdown() {
+    const now = new Date();
+    const target = getNextTuesday();
+    const diff = target - now;
+
+    const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('cd-days').textContent  = pad(days);
+    document.getElementById('cd-hours').textContent = pad(hours);
+    document.getElementById('cd-mins').textContent  = pad(mins);
+    document.getElementById('cd-secs').textContent  = pad(secs);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
 </script>
 
 </body>
